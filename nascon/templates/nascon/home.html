@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}NaSCon 2026 - Pakistan's Largest Inter-University Event{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/main.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="animate-in">Welcome to NaSCon 2026</h1>
+            <p class="animate-in">Pakistan's largest inter-university competition</p>
+            <div class="hero-buttons animate-in">
+                <a href="#register" class="cta-button">Register Now</a>
+                <a href="#events" class="secondary-button">Explore Events</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Events Section -->
+<section id="events" class="events-section">
+    <div class="container">
+        <h2>Our Events</h2>
+        <p class="section-description">Discover the exciting lineup of competitions and activities at NaSCon 2026</p>
+        
+        <div class="event-filters">
+            <button class="filter-button active" data-filter="all">All Events</button>
+            <button class="filter-button" data-filter="technical">Technical</button>
+            <button class="filter-button" data-filter="business">Business</button>
+            <button class="filter-button" data-filter="gaming">Gaming</button>
+        </div>
+        
+        <div class="events-container">
+            {% if events %}
+                {% for event in events %}
+                    <div class="event-card" data-category="{{ event.category|default:'general'|lower }}">
+                        <div class="event-image">
+                            <!-- Placeholder image - in production, this could be dynamically loaded -->
+                            <img src="{% static 'nascon/images/event-placeholder.jpg' %}" alt="{{ event.event_name }}">
+                        </div>
+                        <div class="event-details">
+                            <h3>{{ event.event_name }}</h3>
+                            <div class="event-meta">
+                                <span class="event-date">{{ event.date_time|date:"F j, Y" }}</span>
+                                <span class="event-category">{{ event.category|default:"General" }}</span>
+                            </div>
+                            <p class="event-description">{{ event.description|truncatewords:20 }}</p>
+                            <div class="event-footer">
+                                <span class="registration-fee">Registration: Rs.{{ event.registration_fees }}</span>
+                                <a href="#" class="event-details-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-events-message">No events available at the moment. Check back soon!</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Information Section -->
+<section id="information" class="information-section">
+    <div class="container">
+        <h2>About NaSCon</h2>
+        <div class="info-grid">
+            <div class="info-card animate-on-scroll">
+                <div class="info-icon">🏆</div>
+                <h3>20+ Competitions</h3>
+                <p>From coding challenges to business pitches, gaming tournaments to robotics.</p>
+            </div>
+            <div class="info-card animate-on-scroll">
+                <div class="info-icon">👥</div>
+                <h3>5000+ Participants</h3>
+                <p>Students from across Pakistan compete to showcase their talents.</p>
+            </div>
+            <div class="info-card animate-on-scroll">
+                <div class="info-icon">🏫</div>
+                <h3>50+ Universities</h3>
+                <p>Representing the brightest minds from educational institutions nationwide.</p>
+            </div>
+            <div class="info-card animate-on-scroll">
+                <div class="info-icon">💼</div>
+                <h3>Industry Partners</h3>
+                <p>Connect with leading companies for networking and career opportunities.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sponsor Section -->
+<section id="sponsor" class="sponsor-section">
+    <div class="container">
+        <h2>Become a Sponsor</h2>
+        <p class="section-description">Partner with one of Pakistan's largest student-run events and connect with future talent</p>
+        
+        <div class="sponsor-packages">
+            <div class="package-card">
+                <h3>Silver Package</h3>
+                <div class="package-price">Rs.100,000</div>
+                <ul class="package-features">
+                    <li>Logo on event website</li>
+                    <li>Social media mentions</li>
+                    <li>Booth at the venue</li>
+                </ul>
+                <a href="#contact" class="package-button">Contact Us</a>
+            </div>
+            
+            <div class="package-card featured">
+                <div class="featured-label">Popular</div>
+                <h3>Gold Package</h3>
+                <div class="package-price">Rs.250,000</div>
+                <ul class="package-features">
+                    <li>All Silver benefits</li>
+                    <li>Larger booth space</li>
+                    <li>Logo on event shirts</li>
+                    <li>Speaking opportunity</li>
+                </ul>
+                <a href="#contact" class="package-button">Contact Us</a>
+            </div>
+            
+            <div class="package-card">
+                <h3>Platinum Package</h3>
+                <div class="package-price">Rs.500,000</div>
+                <ul class="package-features">
+                    <li>All Gold benefits</li>
+                    <li>Named event sponsorship</li>
+                    <li>Premium booth location</li>
+                    <li>Access to participant resumes</li>
+                </ul>
+                <a href="#contact" class="package-button">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Registration CTA -->
+<section id="register" class="register-section">
+    <div class="container">
+        <h2>Ready to Join NaSCon 2026?</h2>
+        <p>Registration is now open for individual and team events</p>
+        <a href="#" class="cta-button large">Register Now</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'nascon/js/home.js' %}"></script>
+{% endblock %}
