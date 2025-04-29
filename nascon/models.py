@@ -13,15 +13,15 @@ class User(AbstractUser):
     # overriding email field to be unique
     email = models.EmailField(unique=True)
     role_choices = {
-        'participant' : 'participant',
-        'organizer' : 'organizer',
-        'judge' : 'judge',
-        'society' : 'society',
-        'sponsor' : 'sponsor',
+        'participant' : 'Participant',
+        'organizer' : 'Organizer',
+        'judge' : 'Judge',
+        'society' : 'Society',
+        'sponsor' : 'Sponsor',
     }
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-    role = models.CharField(max_length=11, choices=role_choices)
+    role = models.CharField(max_length=20, choices=role_choices)
     accommodation_id = models.ForeignKey(Accommodation, models.DO_NOTHING, blank=True, null=True)
 
 

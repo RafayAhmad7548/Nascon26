@@ -9,11 +9,8 @@
 #     })
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import transaction
-from .models import Event, User
-from .forms import SignupForm, LoginForm
-# import bcrypt
-import random
+from .models import Event 
+from .forms import SignupForm
 
 def index(request):
     # Get all events from the database
@@ -22,47 +19,18 @@ def index(request):
         "events": events
     })
 
-def signup_view(request):
-    # if request.method == 'POST':
-    #     form = SignupForm(request.POST)
-    #     if form.is_valid():
-    #         try:
-    #             with transaction.atomic():
-    #                 # Generate hash for password
-    #                 password = form.cleaned_data['password']
-    #                 hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    #
-    #                 # Find max user ID and add 1 for new user
-    #                 max_userid = User.objects.all().order_by('-userid').first()
-    #                 new_userid = 1
-    #                 if max_userid:
-    #                     new_userid = max_userid.userid + 1
-    #
-    #                 # Create new user
-    #                 user = User(
-    #                     userid=new_userid,
-    #                     username=form.cleaned_data['username'],
-    #                     email=form.cleaned_data['email'],
-    #                     password=hashed_password.decode(),  # Store hashed password as string
-    #                     role=form.cleaned_data['role']
-    #                 )
-    #                 user.save()
-    #
-    #                 # Set session data
-    #                 request.session['user_id'] = user.userid
-    #                 request.session['username'] = user.username
-    #                 request.session['role'] = user.role
-    #
-    #                 messages.success(request, 'Account created successfully!')
-    #                 return redirect('home')
-    #         except Exception as e:
-    #             messages.error(request, f'An error occurred: {str(e)}')
-    # else:
-    #     form = SignupForm()
-    
-    return render(request, 'nascon/signup.html')
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = SignupForm()
 
-def login_view(request):
+    return render(request, 'nascon/signup.html', { 'form' : form })
+
+def login(request):
     # if request.method == 'POST':
     #     form = LoginForm(request.POST)
     #     if form.is_valid():
