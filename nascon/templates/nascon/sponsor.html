@@ -21,16 +21,16 @@
         
         <div class="sponsor-packages">
             {% for package in packages %}
-            <div class="package-card {% if package.name == 'Gold Package' %}featured{% endif %}">
-                {% if package.name == 'Gold Package' %}<div class="featured-label">Popular</div>{% endif %}
-                <h3>{{ package.name }}</h3>
-                <div class="package-price">Rs.{{ package.price }}</div>
+            <div class="package-card {% if package.category == 'Gold' %}featured{% endif %}">
+                {% if package.category == 'Gold' %}<div class="featured-label">Popular</div>{% endif %}
+                <h3>{{ package.category }} Package</h3>
+                <div class="package-price">Rs.{{ package.cost }}</div>
                 <ul class="package-features">
-                    {% for benefit in package.benefits %}
+                    {% for benefit in package.benefits_list %}
                         <li>{{ benefit }}</li>
                     {% endfor %}
                 </ul>
-                <a href="{% url 'sponsor_events' %}?package={{ package.id }}" class="package-button">Select Package</a>
+                <a href="{% url 'sponsor_events' %}?package={{ package.package_id }}" class="package-button">Select Package</a>
             </div>
             {% endfor %}
         </div>

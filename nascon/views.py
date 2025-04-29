@@ -1,6 +1,8 @@
 from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from .models import Event, SponsorshipPackage
+from .forms import SignupForm
 from django.contrib.auth import authenticate, login
 from .models import Event
 from .forms import SignupForm, LoginForm
@@ -55,41 +57,15 @@ def logout_view(request):
 def sponsor_view(request):
     """View for the main sponsor page showing available packages"""
     # Dummy data for packages
-    packages = [
-        {
-            'id': 1,
-            'name': 'Silver Package',
-            'price': '100,000',
-            'benefits': [
-                'Logo on event website',
-                'Social media mentions',
-                'Booth at the venue'
-            ]
-        },
-        {
-            'id': 2,
-            'name': 'Gold Package',
-            'price': '250,000',
-            'benefits': [
-                'All Silver benefits',
-                'Larger booth space',
-                'Logo on event shirts',
-                'Speaking opportunity'
-            ]
-        },
-        {
-            'id': 3,
-            'name': 'Platinum Package',
-            'price': '500,000',
-            'benefits': [
-                'All Gold benefits',
-                'Named event sponsorship',
-                'Premium booth location',
-                'Access to participant resumes'
-            ]
-        }
-    ]
+    packages = SponsorshipPackage.objects.all()
     
+    for package in packages:
+        # Assuming benefits are stored as text with each benefit on a new line
+        if package.benefits:
+            package.benefits_list = package.benefits.split(', ')
+        else:
+            package.benefits_list = []
+
     return render(request, 'nascon/sponsor.html', {
         'packages': packages
     })
@@ -100,8 +76,8 @@ def sponsor_events_view(request):
     
     # Get package details based on ID
     packages = {
-        '1': {'id': 1, 'name': 'Silver Package', 'price': '100,000'},
-        '2': {'id': 2, 'name': 'Gold Package', 'price': '250,000'},
+        '1': {'id': 1, 'name': 'Silver Package', 'price': '5,000'},
+        '2': {'id': 2, 'name': 'Gold Package', 'price': '10,000'},
         '3': {'id': 3, 'name': 'Platinum Package', 'price': '500,000'}
     }
     
@@ -110,31 +86,31 @@ def sponsor_events_view(request):
     # Get events from database or use dummy data
     events = Event.objects.all()
     
-    # If no events in database, use dummy events
-    if not events:
-        events = [
-            {
-                'event_id': 1,
-                'event_name': 'Coding Competition',
-                'description': 'A competitive programming contest for university students',
-                'category': 'Technical',
-                'date_time': '2026-02-15 10:00:00'
-            },
-            {
-                'event_id': 2,
-                'event_name': 'Business Case Competition',
-                'description': 'Present innovative solutions to real-world business problems',
-                'category': 'Business',
-                'date_time': '2026-02-16 11:00:00'
-            },
-            {
-                'event_id': 3,
-                'event_name': 'Gaming Tournament',
-                'description': 'Compete in various gaming categories from esports to board games',
-                'category': 'Gaming',
-                'date_time': '2026-02-17 09:00:00'
-            }
-        ]
+    # # If no events in database, use dummy events
+    # if not events:
+    #     events = [
+    #         {
+    #             'event_id': 1,
+    #             'event_name': 'Coding Competition',
+    #             'description': 'A competitive programming contest for university students',
+    #             'category': 'Technical',
+    #             'date_time': '2026-02-15 10:00:00'
+    #         },
+    #         {
+    #             'event_id': 2,
+    #             'event_name': 'Business Case Competition',
+    #             'description': 'Present innovative solutions to real-world business problems',
+    #             'category': 'Business',
+    #             'date_time': '2026-02-16 11:00:00'
+    #         },
+    #         {
+    #             'event_id': 3,
+    #             'event_name': 'Gaming Tournament',
+    #             'description': 'Compete in various gaming categories from esports to board games',
+    #             'category': 'Gaming',
+    #             'date_time': '2026-02-17 09:00:00'
+    #         }
+    #     ]
     
     return render(request, 'nascon/sponsor_events.html', {
         'package': package,
