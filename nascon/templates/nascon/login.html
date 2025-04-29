@@ -24,14 +24,14 @@
             </div>
             {% endif %}
             
-            <form method="post" class="auth-form">
+            <form method="post" class="auth-form" action="{% url 'login' %}">
                 {% csrf_token %}
                 
                 <div class="form-group">
-                    <label for="{{ form.username_or_email.id_for_label }}">Username or Email</label>
-                    {{ form.username_or_email }}
-                    {% if form.username_or_email.errors %}
-                    <div class="error-message">{{ form.username_or_email.errors }}</div>
+                    <label for="{{ form.email.id_for_label }}">Email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <div class="error-message">{{ form.email.errors }}</div>
                     {% endif %}
                 </div>
                 

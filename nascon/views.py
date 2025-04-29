@@ -1,71 +1,55 @@
-# from django.shortcuts import render
-# from .models import Event
-
-# def index(request):
-#     # Get all events from the database
-#     events = Event.objects.all()
-#     return render(request, "nascon/home.html", {
-#         "events": events
-#     })
+from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Event 
-from .forms import SignupForm
+from django.contrib.auth import authenticate, login
+from .models import Event
+from .forms import SignupForm, LoginForm
 
 def index(request):
     # Get all events from the database
     events = Event.objects.all()
     return render(request, "nascon/home.html", {
         "events": events
-    })
+})
 
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'singup success')
             return redirect('login')
     else:
         form = SignupForm()
 
     return render(request, 'nascon/signup.html', { 'form' : form })
 
-def login(request):
-    # if request.method == 'POST':
-    #     form = LoginForm(request.POST)
-    #     if form.is_valid():
-    #         username_or_email = form.cleaned_data['username_or_email']
-    #         password = form.cleaned_data['password']
-    #
-    #         # Check if user exists by username or email
-    #         try:
-    #             # Try to find by username
-    #             user = User.objects.filter(username=username_or_email).first()
-    #             if not user:
-    #                 # Try to find by email
-    #                 user = User.objects.filter(email=username_or_email).first()
-    #
-    #             if user and bcrypt.checkpw(password.encode(), user.password.encode()):
-    #                 # Authentication successful
-    #                 request.session['user_id'] = user.userid
-    #                 request.session['username'] = user.username
-    #                 request.session['role'] = user.role
-    #                 messages.success(request, 'Login successful!')
-    #                 return redirect('home')
-    #             else:
-    #                 messages.error(request, 'Invalid username/email or password.')
-    #         except Exception as e:
-    #             messages.error(request, f'An error occurred: {str(e)}')
-    # else:
-    #     form = LoginForm()
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'login success')
+                return redirect('home')
+            else:
+                form.add_error('Invalid Credentials', error=ValidationError('Invalid Credentials'))
+
+    else:
+        form = LoginForm()
     
-    return render(request, 'nascon/login.html')
+    return render(request, 'nascon/login.html', { 'form' : form })
 
 def logout_view(request):
-    # Clear all session data
     request.session.flush()
     messages.success(request, 'You have been logged out successfully.')
     return redirect('home')
+
+
 
 # Add these view functions
 def sponsor_view(request):
