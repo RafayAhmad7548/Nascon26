@@ -98,3 +98,127 @@ def logout_view(request):
     request.session.flush()
     messages.success(request, 'You have been logged out successfully.')
     return redirect('home')
+
+# Add these view functions
+def sponsor_view(request):
+    """View for the main sponsor page showing available packages"""
+    # Dummy data for packages
+    packages = [
+        {
+            'id': 1,
+            'name': 'Silver Package',
+            'price': '100,000',
+            'benefits': [
+                'Logo on event website',
+                'Social media mentions',
+                'Booth at the venue'
+            ]
+        },
+        {
+            'id': 2,
+            'name': 'Gold Package',
+            'price': '250,000',
+            'benefits': [
+                'All Silver benefits',
+                'Larger booth space',
+                'Logo on event shirts',
+                'Speaking opportunity'
+            ]
+        },
+        {
+            'id': 3,
+            'name': 'Platinum Package',
+            'price': '500,000',
+            'benefits': [
+                'All Gold benefits',
+                'Named event sponsorship',
+                'Premium booth location',
+                'Access to participant resumes'
+            ]
+        }
+    ]
+    
+    return render(request, 'nascon/sponsor.html', {
+        'packages': packages
+    })
+
+def sponsor_events_view(request):
+    """View for selecting which event to sponsor after choosing a package"""
+    package_id = request.GET.get('package')
+    
+    # Get package details based on ID
+    packages = {
+        '1': {'id': 1, 'name': 'Silver Package', 'price': '100,000'},
+        '2': {'id': 2, 'name': 'Gold Package', 'price': '250,000'},
+        '3': {'id': 3, 'name': 'Platinum Package', 'price': '500,000'}
+    }
+    
+    package = packages.get(package_id)
+    
+    # Get events from database or use dummy data
+    events = Event.objects.all()
+    
+    # If no events in database, use dummy events
+    if not events:
+        events = [
+            {
+                'event_id': 1,
+                'event_name': 'Coding Competition',
+                'description': 'A competitive programming contest for university students',
+                'category': 'Technical',
+                'date_time': '2026-02-15 10:00:00'
+            },
+            {
+                'event_id': 2,
+                'event_name': 'Business Case Competition',
+                'description': 'Present innovative solutions to real-world business problems',
+                'category': 'Business',
+                'date_time': '2026-02-16 11:00:00'
+            },
+            {
+                'event_id': 3,
+                'event_name': 'Gaming Tournament',
+                'description': 'Compete in various gaming categories from esports to board games',
+                'category': 'Gaming',
+                'date_time': '2026-02-17 09:00:00'
+            }
+        ]
+    
+    return render(request, 'nascon/sponsor_events.html', {
+        'package': package,
+        'events': events
+    })
+
+def sponsor_confirm_view(request):
+    """Handle form submission and show confirmation"""
+    if request.method == 'POST':
+        package_id = request.POST.get('package_id')
+        event_id = request.POST.get('event_id')
+        
+        # Get package details
+        packages = {
+            '1': {'id': 1, 'name': 'Silver Package', 'price': '100,000'},
+            '2': {'id': 2, 'name': 'Gold Package', 'price': '250,000'},
+            '3': {'id': 3, 'name': 'Platinum Package', 'price': '500,000'}
+        }
+        
+        package = packages.get(package_id)
+        
+        # Get event details - try database first, then fall back to dummy data
+        try:
+            event = Event.objects.get(event_id=event_id)
+        except:
+            # Dummy events
+            events = {
+                '1': {'event_id': 1, 'event_name': 'Coding Competition', 'date_time': '2026-02-15 10:00:00'},
+                '2': {'event_id': 2, 'event_name': 'Business Case Competition', 'date_time': '2026-02-16 11:00:00'},
+                '3': {'event_id': 3, 'event_name': 'Gaming Tournament', 'date_time': '2026-02-17 09:00:00'}
+            }
+            event = events.get(event_id)
+        
+        return render(request, 'nascon/sponsor_confirm.html', {
+            'package': package,
+            'event': event
+        })
+    
+    return redirect('sponsor')

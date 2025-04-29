@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Become a Sponsor - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/sponsor.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="sponsor-hero-section">
+    <div class="container">
+        <h1>Become a Sponsor</h1>
+        <p class="section-description">Partner with one of Pakistan's largest student-run events and connect with future talent</p>
+    </div>
+</section>
+
+<section class="sponsor-section">
+    <div class="container">
+        <h2>Choose a Sponsorship Package</h2>
+        
+        <div class="sponsor-packages">
+            {% for package in packages %}
+            <div class="package-card {% if package.name == 'Gold Package' %}featured{% endif %}">
+                {% if package.name == 'Gold Package' %}<div class="featured-label">Popular</div>{% endif %}
+                <h3>{{ package.name }}</h3>
+                <div class="package-price">Rs.{{ package.price }}</div>
+                <ul class="package-features">
+                    {% for benefit in package.benefits %}
+                        <li>{{ benefit }}</li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'sponsor_events' %}?package={{ package.id }}" class="package-button">Select Package</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="sponsor-faq">
+    <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <h3>What does sponsorship include?</h3>
+                <p>Sponsorships include various benefits depending on the package, such as logo placement, booth space, speaking opportunities, and access to talented students.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How many attendees will be at the event?</h3>
+                <p>NaSCon typically attracts over 5,000 attendees from more than 50 universities across Pakistan.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Can we customize our sponsorship package?</h3>
+                <p>Yes, we're happy to discuss custom sponsorship arrangements. Please contact us at sponsors@nascon.pk.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

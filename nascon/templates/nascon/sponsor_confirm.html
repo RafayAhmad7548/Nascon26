@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sponsorship Confirmation - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/sponsor.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="confirmation-section">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="confirmation-icon">✓</div>
+            <h1>Thank You for Your Sponsorship!</h1>
+            
+            <div class="confirmation-details">
+                <p class="confirmation-message">Thank you for sponsoring <strong>{{ event.event_name }}</strong> with the <strong>{{ package.name }}</strong>!</p>
+                
+                <div class="details-box">
+                    <div class="detail-item">
+                        <span class="detail-label">Event:</span>
+                        <span class="detail-value">{{ event.event_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Package:</span>
+                        <span class="detail-value">{{ package.name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Amount:</span>
+                        <span class="detail-value">Rs.{{ package.price }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value">{{ event.date_time|date:"F j, Y" }}</span>
+                    </div>
+                </div>
+                
+                <p class="next-steps">Our team will contact you soon with further details about your sponsorship benefits.</p>
+                
+                <div class="confirmation-actions">
+                    <a href="{% url 'home' %}" class="secondary-button">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

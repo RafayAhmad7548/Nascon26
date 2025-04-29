@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Select Event to Sponsor - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/sponsor.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="sponsor-events-section">
+    <div class="container">
+        <h1>Select an Event to Sponsor</h1>
+        <p class="selected-package">Selected Package: <span>{{ package.name }}</span> (Rs.{{ package.price }})</p>
+        
+        <div class="events-container">
+            {% for event in events %}
+            <div class="event-card" data-category="{{ event.category|lower }}">
+                <div class="event-image">
+                    <img src="{% static 'nascon/images/event-placeholder.jpg' %}" alt="{{ event.event_name }}">
+                </div>
+                <div class="event-details">
+                    <h3>{{ event.event_name }}</h3>
+                    <div class="event-meta">
+                        <span class="event-date">{{ event.date_time|date:"F j, Y" }}</span>
+                        <span class="event-category">{{ event.category }}</span>
+                    </div>
+                    <p class="event-description">{{ event.description|truncatewords:20 }}</p>
+                    <div class="event-footer">
+                        <form action="{% url 'sponsor_confirm' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="package_id" value="{{ package.id }}">
+                            <input type="hidden" name="event_id" value="{{ event.event_id }}">
+                            <button type="submit" class="sponsor-button">Sponsor This Event</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

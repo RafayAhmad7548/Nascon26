@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}NaSCon 2026{% endblock %}</title>
+        <title>{% block title %}{% endblock %}</title>
         <!-- Core CSS file -->
         <link rel="stylesheet" href="{% static 'nascon/css/main.css' %}">
         <!-- Component-specific CSS -->
@@ -30,7 +30,7 @@
                     <ul class="nav-links">
                         <li><a href="{% url 'home' %}">Home</a></li>
                         <li><a href="#information">Information</a></li>
-                        <li><a href="#sponsor">Become a Sponsor</a></li>
+                        <li><a href="{% url 'sponsor' %}">Become a Sponsor</a></li>
                         {% if request.session.user_id %}
                             <!-- User is logged in -->
                             <li><a href="#register" class="cta-button">Register</a></li>
@@ -62,7 +62,7 @@
                         <ul>
                             <li><a href="{% url 'home' %}">Home</a></li>
                             <li><a href="#information">Information</a></li>
-                            <li><a href="#sponsor">Become a Sponsor</a></li>
+                            <li><a href="{% url 'sponsor' %}">Become a Sponsor</a></li>
                             <li><a href="#register">Register Now</a></li>
                         </ul>
                     </div>
