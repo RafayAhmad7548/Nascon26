@@ -3,9 +3,26 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Event, SponsorshipPackage
 from .forms import SignupForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .models import Event
 from .forms import SignupForm, LoginForm
+from functools import wraps
+
+def sponsor_required(function):
+    @wraps(function)
+    def wrapper(request, *args, **kwargs):
+        # Check if user is authenticated
+        if not request.user.is_authenticated:
+            messages.error(request, "Please log in to access the sponsor area.")
+            return redirect('login')
+        
+        # Check if user has sponsor role
+        if request.user.role != 'sponsor':
+            messages.error(request, "This area is restricted to sponsors only.")
+            return redirect('home')
+            
+        return function(request, *args, **kwargs)
+    return wrapper
 
 def index(request):
     # Get all events from the database
@@ -39,7 +56,7 @@ def login_view(request):
                 messages.success(request, 'login success')
                 return redirect('home')
             else:
-                form.add_error('Invalid Credentials', error=ValidationError('Invalid Credentials'))
+                form.add_error('password', error=ValidationError('Invalid Credentials'))
 
     else:
         form = LoginForm()
@@ -48,12 +65,14 @@ def login_view(request):
 
 def logout_view(request):
     request.session.flush()
+    logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('home')
 
 
 
 # Add these view functions
+@sponsor_required
 def sponsor_view(request):
     """View for the main sponsor page showing available packages"""
     # Dummy data for packages
@@ -70,47 +89,15 @@ def sponsor_view(request):
         'packages': packages
     })
 
+@sponsor_required
 def sponsor_events_view(request):
     """View for selecting which event to sponsor after choosing a package"""
     package_id = request.GET.get('package')
     
-    # Get package details based on ID
-    packages = {
-        '1': {'id': 1, 'name': 'Silver Package', 'price': '5,000'},
-        '2': {'id': 2, 'name': 'Gold Package', 'price': '10,000'},
-        '3': {'id': 3, 'name': 'Platinum Package', 'price': '500,000'}
-    }
-    
-    package = packages.get(package_id)
+    package = SponsorshipPackage.objects.get(package_id__exact=package_id)
     
     # Get events from database or use dummy data
     events = Event.objects.all()
-    
-    # # If no events in database, use dummy events
-    # if not events:
-    #     events = [
-    #         {
-    #             'event_id': 1,
-    #             'event_name': 'Coding Competition',
-    #             'description': 'A competitive programming contest for university students',
-    #             'category': 'Technical',
-    #             'date_time': '2026-02-15 10:00:00'
-    #         },
-    #         {
-    #             'event_id': 2,
-    #             'event_name': 'Business Case Competition',
-    #             'description': 'Present innovative solutions to real-world business problems',
-    #             'category': 'Business',
-    #             'date_time': '2026-02-16 11:00:00'
-    #         },
-    #         {
-    #             'event_id': 3,
-    #             'event_name': 'Gaming Tournament',
-    #             'description': 'Compete in various gaming categories from esports to board games',
-    #             'category': 'Gaming',
-    #             'date_time': '2026-02-17 09:00:00'
-    #         }
-    #     ]
     
     return render(request, 'nascon/sponsor_events.html', {
         'package': package,
@@ -121,32 +108,16 @@ def events_view(request):
     events = Event.objects.all().order_by('date_time')
     return render(request, 'nascon/events.html', {'events': events})
 
+@sponsor_required
 def sponsor_confirm_view(request):
     """Handle form submission and show confirmation"""
     if request.method == 'POST':
         package_id = request.POST.get('package_id')
+        print(package_id)
         event_id = request.POST.get('event_id')
-        
-        # Get package details
-        packages = {
-            '1': {'id': 1, 'name': 'Silver Package', 'price': '100,000'},
-            '2': {'id': 2, 'name': 'Gold Package', 'price': '250,000'},
-            '3': {'id': 3, 'name': 'Platinum Package', 'price': '500,000'}
-        }
-        
-        package = packages.get(package_id)
-        
-        # Get event details - try database first, then fall back to dummy data
-        try:
-            event = Event.objects.get(event_id=event_id)
-        except:
-            # Dummy events
-            events = {
-                '1': {'event_id': 1, 'event_name': 'Coding Competition', 'date_time': '2026-02-15 10:00:00'},
-                '2': {'event_id': 2, 'event_name': 'Business Case Competition', 'date_time': '2026-02-16 11:00:00'},
-                '3': {'event_id': 3, 'event_name': 'Gaming Tournament', 'date_time': '2026-02-17 09:00:00'}
-            }
-            event = events.get(event_id)
+        package = SponsorshipPackage.objects.get(package_id__exact=package_id)
+
+        event = Event.objects.get(event_id=event_id)
         
         return render(request, 'nascon/sponsor_confirm.html', {
             'package': package,

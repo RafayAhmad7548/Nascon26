@@ -15,7 +15,7 @@
             <h1>Thank You for Your Sponsorship!</h1>
             
             <div class="confirmation-details">
-                <p class="confirmation-message">Thank you for sponsoring <strong>{{ event.event_name }}</strong> with the <strong>{{ package.name }}</strong>!</p>
+                <p class="confirmation-message">Thank you for sponsoring <strong>{{ event.event_name }}</strong> with the <strong>{{ package.category }}</strong>!</p>
                 
                 <div class="details-box">
                     <div class="detail-item">
@@ -24,11 +24,11 @@
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Package:</span>
-                        <span class="detail-value">{{ package.name }}</span>
+                        <span class="detail-value">{{ package.category }}</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Amount:</span>
-                        <span class="detail-value">Rs.{{ package.price }}</span>
+                        <span class="detail-value">Rs.{{ package.cost }}</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Date:</span>

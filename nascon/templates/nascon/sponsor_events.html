@@ -11,7 +11,7 @@
 <section class="sponsor-events-section">
     <div class="container">
         <h1>Select an Event to Sponsor</h1>
-        <p class="selected-package">Selected Package: <span>{{ package.name }}</span> (Rs.{{ package.price }})</p>
+        <p class="selected-package">Selected Package: <span>{{ package.category }}</span> (Rs.{{ package.cost }})</p>
         
         <div class="events-container">
             {% for event in events %}
@@ -29,7 +29,7 @@
                     <div class="event-footer">
                         <form action="{% url 'sponsor_confirm' %}" method="post">
                             {% csrf_token %}
-                            <input type="hidden" name="package_id" value="{{ package.id }}">
+                            <input type="hidden" name="package_id" value="{{ package.package_id }}">
                             <input type="hidden" name="event_id" value="{{ event.event_id }}">
                             <button type="submit" class="sponsor-button">Sponsor This Event</button>
                         </form>

@@ -9,5 +9,5 @@ urlpatterns = [
     path('sponsor/confirm/', views.sponsor_confirm_view, name="sponsor_confirm"),
     path('login/', views.login_view, name="login"),
     path('signup/', views.signup, name="signup"),
-    # path('logout/', views.logout_view, name="logout"),
+    path('logout/', views.logout_view, name="logout"),
 ]
