@@ -4,7 +4,7 @@ from django.contrib import messages
 from .models import Event, SponsorshipPackage
 from .forms import SignupForm
 from django.contrib.auth import authenticate, login, logout
-from .models import Event, User
+from .models import Event, User, Sponsor
 from .forms import SignupForm, LoginForm
 from functools import wraps
 
@@ -120,11 +120,20 @@ def sponsor_confirm_view(request):
     """Handle form submission and show confirmation"""
     if request.method == 'POST':
         package_id = request.POST.get('package_id')
-        print(package_id)
         event_id = request.POST.get('event_id')
-        package = SponsorshipPackage.objects.get(package_id__exact=package_id)
+        user = request.user
 
+        # Fetch related objects
+        package = SponsorshipPackage.objects.get(package_id=package_id)
         event = Event.objects.get(event_id=event_id)
+
+        # Insert into Sponsor table
+        sponsor_obj = Sponsor.objects.create(
+            sponsor_id=user,
+            event_id=event,
+            package_id=package_id
+        )
+        sponsor_obj.save()
         
         return render(request, 'nascon/sponsor_confirm.html', {
             'package': package,
