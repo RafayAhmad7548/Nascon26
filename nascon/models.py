@@ -26,6 +26,19 @@ class User(AbstractUser):
 
 
 class Event(models.Model):
+    CATEGORY_CHOICES = [
+        ('technical', 'Technical'),
+        ('business', 'Business'),
+        ('gaming', 'Gaming'),
+        ('general', 'General'),
+    ]
+    
+    category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='general'
+    )
+
     event_id = models.AutoField(primary_key=True)
     organizer_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizers')
     judge_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='judges')

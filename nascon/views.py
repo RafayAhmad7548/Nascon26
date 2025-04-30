@@ -117,6 +117,10 @@ def sponsor_events_view(request):
         'events': events
     })
 
+def events_view(request):
+    events = Event.objects.all().order_by('date_time')
+    return render(request, 'nascon/events.html', {'events': events})
+
 def sponsor_confirm_view(request):
     """Handle form submission and show confirmation"""
     if request.method == 'POST':

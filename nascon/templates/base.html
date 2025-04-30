@@ -29,7 +29,7 @@
                     </button>
                     <ul class="nav-links">
                         <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="#information">Information</a></li>
+                        <li><a href="{% url 'events' %}">Events</a></li>
                         <li><a href="{% url 'sponsor' %}">Become a Sponsor</a></li>
                         {% if request.session.user_id %}
                             <!-- User is logged in -->
@@ -61,7 +61,7 @@
                     <div class="footer-links">
                         <ul>
                             <li><a href="{% url 'home' %}">Home</a></li>
-                            <li><a href="#information">Information</a></li>
+                            <li><a href="{% url 'events' %}">Events</a></li>
                             <li><a href="{% url 'sponsor' %}">Become a Sponsor</a></li>
                             <li><a href="#register">Register Now</a></li>
                         </ul>

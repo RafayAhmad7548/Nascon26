@@ -28,8 +28,23 @@
         <h2>Our Events</h2>
         <p class="section-description">Discover the exciting lineup of competitions and activities at NaSCon 2026</p>
         
+        <div class="category-legend">
+            <div class="legend-item">
+                <span class="color-dot technical"></span>
+                <span>Technical</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-dot business"></span>
+                <span>Business</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-dot gaming"></span>
+                <span>Gaming</span>
+            </div>
+        </div>        
+
         <div class="event-filters">
-            <button class="filter-button active" data-filter="all">All Events</button>
+            <button class="filter-button active" class="color-dot gaming" data-filter="all">All Events</button>
             <button class="filter-button" data-filter="technical">Technical</button>
             <button class="filter-button" data-filter="business">Business</button>
             <button class="filter-button" data-filter="gaming">Gaming</button>
@@ -38,11 +53,14 @@
         <div class="events-container">
             {% if events %}
                 {% for event in events %}
-                    <div class="event-card" data-category="{{ event.category|default:'general'|lower }}">
-                        <div class="event-image">
-                            <!-- Placeholder image - in production, this could be dynamically loaded -->
-                            <img src="{% static 'nascon/images/event-placeholder.jpg' %}" alt="{{ event.event_name }}">
+                <div class="event-card" data-category="{{ event.category|default:'general'|lower }}">
+                    <div class="event-image">
+                        <!-- Add category badge here -->
+                        <div class="category-badge {{ event.category|default:'general'|lower }}">
+                            {{ event.category|default:"General" }}
                         </div>
+                          <img src="{% static 'nascon/images/event-placeholder.jpg' %}" alt="{{ event.event_name }}">
+                    </div>
                         <div class="event-details">
                             <h3>{{ event.event_name }}</h3>
                             <div class="event-meta">
@@ -61,6 +79,9 @@
                 <p class="no-events-message">No events available at the moment. Check back soon!</p>
             {% endif %}
         </div>
+        <div class="view-all-events">
+            <a href="{% url 'events' %}" class="all-events-button">View All Events</a>
+        </div>    
     </div>
 </section>
 
