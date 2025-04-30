@@ -9,7 +9,7 @@ class SignupForm(forms.ModelForm):
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'role': forms.Select(attrs={'class': 'form-control'}),
+            'role': forms.Select(attrs={'class': 'form-control', 'required': 'false'}),
             'accommodation_id': forms.Select(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
@@ -20,6 +20,8 @@ class SignupForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
         self.fields['username'].help_text = ''
 
     def clean(self):
@@ -29,7 +31,7 @@ class SignupForm(forms.ModelForm):
         password_again = self.cleaned_data.get('password_again')
 
         if password != password_again:
-            raise forms.ValidationError(('passwords don\'t match'), code='invalid')
+            raise forms.ValidationError(('Passwords don\'t match'), code='invalid')
     
     # to ensure proper hashing
     def save(self, commit=True):

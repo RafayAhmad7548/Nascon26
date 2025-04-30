@@ -4,7 +4,7 @@ from django.contrib import messages
 from .models import Event, SponsorshipPackage
 from .forms import SignupForm
 from django.contrib.auth import authenticate, login, logout
-from .models import Event
+from .models import Event, User
 from .forms import SignupForm, LoginForm
 from functools import wraps
 
@@ -31,12 +31,12 @@ def index(request):
         "events": events
 })
 
-def signup(request):
+def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'singup success')
+            messages.success(request, 'Registered Successfully')
             return redirect('login')
     else:
         form = SignupForm()
@@ -50,13 +50,20 @@ def login_view(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
-            user = authenticate(request, username=email, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, 'login success')
-                return redirect('home')
-            else:
-                form.add_error('password', error=ValidationError('Invalid Credentials'))
+            try:
+                User.objects.get(email=email)
+
+                user = authenticate(request, username=email, password=password)
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, 'Login Successful')
+                    return redirect('home')
+                else:
+                    form.add_error('password', error=ValidationError('Invalid Credentials'))
+
+            except User.DoesNotExist:
+                form.add_error('email', error=ValidationError('Email not registered'))
+
 
     else:
         form = LoginForm()
