@@ -128,11 +128,14 @@ def sponsor_confirm_view(request):
         package = SponsorshipPackage.objects.get(package_id=package_id)
         event = Event.objects.get(event_id=event_id)
 
-        sponsor_obj = Sponsor.objects.create(
+        # Insert into Sponsor table (avoid duplicates in keys)
+        sponsor_obj, created = Sponsor.objects.get_or_create(
             sponsor_id=user,
             event_id=event,
-            package_id=package_id
+            defaults={'package': package}
         )
+        if not created:
+            sponsor_obj.package = package  # Update package if already exists
         sponsor_obj.save()
         
         return render(request, 'nascon/sponsor_confirm.html', {
