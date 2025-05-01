@@ -59,10 +59,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Login Successful')
-                next = request.POST.get('next')
-                if next:
-                    return redirect(next)
-                return redirect('home')
+                return redirect(request.POST.get('next') or 'home')
             else:
                 form.add_error('password', error=ValidationError('Invalid Credentials'))
 

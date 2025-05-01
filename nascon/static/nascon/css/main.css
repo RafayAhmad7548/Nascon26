@@ -239,6 +239,7 @@ to {
 
 .role-button:hover {
   background-color: #003d99;
+  color: white;
 }
 
 /* Responsive adjustments */

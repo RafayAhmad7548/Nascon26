@@ -10,20 +10,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const roleSelect = document.getElementById('id_role');
-    if (roleSelect) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const role = urlParams.get('role');
-        if (role) {
-            // Find and select the option with the matching value
-            for (let option of roleSelect.options) {
-                if (option.value === role) {
-                    option.selected = true;
-                    break;
-                }
-            }
-        }
-    }
-    
 });
 
