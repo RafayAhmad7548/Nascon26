@@ -1,4 +1,80 @@
 /* Sponsor Page Styling */
+.sponsor-section {
+  background-color: var(--light-color);
+}
+
+.sponsor-packages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.package-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.package-card:hover {
+  transform: translateY(-5px);
+}
+
+.package-card.featured {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--primary-color);
+}
+
+.featured-label {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.4rem 1.5rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.package-price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin: 1.5rem 0;
+}
+
+.package-features {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+
+.package-features li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.package-features li:last-child {
+  border-bottom: none;
+}
+
+.package-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  width: 100%;
+}
+
+.package-button:hover {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
 .sponsor-hero-section {
     background: linear-gradient(135deg, #0052cc 0%, #00bcd4 100%);
     color: white;
