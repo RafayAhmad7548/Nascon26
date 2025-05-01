@@ -52,22 +52,17 @@ def login_view(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             
-            try:
-                User.objects.get(email=email)
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Login Successful')
+                next = request.POST.get('next')
+                if next:
+                    return redirect(next)
+                return redirect('home')
+            else:
+                form.add_error('password', error=ValidationError('Invalid Credentials'))
 
-                user = authenticate(request, username=email, password=password)
-                if user is not None:
-                    login(request, user)
-                    messages.success(request, 'Login Successful')
-                    next = request.POST.get('next')
-                    if next:
-                        return redirect(next)
-                    return redirect('home')
-                else:
-                    form.add_error('password', error=ValidationError('Invalid Credentials'))
-
-            except User.DoesNotExist:
-                form.add_error('email', error=ValidationError('Email not registered'))
 
 
     else:
@@ -126,11 +121,9 @@ def sponsor_confirm_view(request):
         event_id = request.POST.get('event_id')
         user = request.user
 
-        # Fetch related objects
         package = SponsorshipPackage.objects.get(package_id=package_id)
         event = Event.objects.get(event_id=event_id)
 
-        # Insert into Sponsor table
         sponsor_obj = Sponsor.objects.create(
             sponsor_id=user,
             event_id=event,
