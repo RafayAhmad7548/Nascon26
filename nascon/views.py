@@ -41,7 +41,9 @@ def signup_view(request):
             messages.success(request, 'Registered Successfully')
             return redirect('login')
     else:
-        form = SignupForm()
+        selected_role = request.GET.get('role', '')
+        form = SignupForm(initial={'role': selected_role})
+    
 
     return render(request, 'nascon/signup.html', { 'form' : form })
 

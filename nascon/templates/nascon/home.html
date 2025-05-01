@@ -22,6 +22,74 @@
     </div>
 </section>
 
+<!-- Roles Section -->
+<section id="roles" class="roles-section">
+    <div class="container">
+        <h2>Join NaSCon As:</h2>
+        <div class="roles-container">
+            <!-- Participant Role -->
+            <div class="role-card">
+                <div class="role-image">
+                    <img src="{% static 'nascon/images/participant.png' %}" alt="Participant">
+                </div>
+                <div class="role-content">
+                    <h3>Participant</h3>
+                    <p>Showcase your skills and compete against the brightest minds from universities across Pakistan. Join as a participant to win exciting prizes and gain recognition in your field.</p>
+                    <a href="{% url 'signup' %}?role=participant" class="role-button">Register as Participant</a>
+                </div>
+            </div>
+            
+            <!-- Organizer Role -->
+            <div class="role-card">
+                <div class="role-image">
+                    <img src="{% static 'nascon/images/organizer.png' %}" alt="Organizer">
+                </div>
+                <div class="role-content">
+                    <h3>Organizer</h3>
+                    <p>Help shape the future of NaSCon by leading event planning and execution. Organizers gain valuable leadership experience and expand their professional network.</p>
+                    <a href="{% url 'signup' %}?role=organizer" class="role-button">Register as Organizer</a>
+                </div>
+            </div>
+            
+            <!-- Judge Role -->
+            <div class="role-card">
+                <div class="role-image">
+                    <img src="{% static 'nascon/images/judge.jpeg' %}" alt="Judge">
+                </div>
+                <div class="role-content">
+                    <h3>Judge</h3>
+                    <p>Industry professionals and academics can contribute their expertise by evaluating competitions. Judges get to witness innovation firsthand and connect with promising talent.</p>
+                    <a href="{% url 'signup' %}?role=judge" class="role-button">Register as Judge</a>
+                </div>
+            </div>
+            
+            <!-- Society Role -->
+            <div class="role-card">
+                <div class="role-image">
+                    <img src="{% static 'nascon/images/society.jpeg' %}" alt="Society">
+                </div>
+                <div class="role-content">
+                    <h3>Society</h3>
+                    <p>University societies can partner with NaSCon to bring their members to participate in various events. Societies receive special group registration benefits and dedicated support.</p>
+                    <a href="{% url 'signup' %}?role=society" class="role-button">Register as Society</a>
+                </div>
+            </div>
+            
+            <!-- Sponsor Role -->
+            <div class="role-card">
+                <div class="role-image">
+                    <img src="{% static 'nascon/images/sponsor.jpeg' %}" alt="Sponsor">
+                </div>
+                <div class="role-content">
+                    <h3>Sponsor</h3>
+                    <p>Connect your brand with thousands of talented students and professionals. Sponsors receive excellent visibility and opportunities to recruit top talent from Pakistan's leading universities.</p>
+                    <a href="{% url 'signup' %}?role=sponsor" class="role-button">Become a Sponsor</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Information Section -->
 <section id="information" class="information-section">
     <div class="container">
