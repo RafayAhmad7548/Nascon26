@@ -26,7 +26,7 @@
                 <h3>{{ package.category }} Package</h3>
                 <div class="package-price">Rs.{{ package.cost }}</div>
                 <ul class="package-features">
-                    {% for benefit in package.benefits_list %}
+                    {% for benefit in benefits %}
                         <li>{{ benefit }}</li>
                     {% endfor %}
                 </ul>

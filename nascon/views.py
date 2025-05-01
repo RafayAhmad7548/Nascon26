@@ -5,24 +5,26 @@ from .models import Event, SponsorshipPackage
 from .forms import SignupForm
 from django.contrib.auth import authenticate, login, logout
 from .models import Event, User, Sponsor
+from django.contrib.auth.decorators import login_required
 from .forms import SignupForm, LoginForm
 from functools import wraps
 
-def sponsor_required(function):
-    @wraps(function)
-    def wrapper(request, *args, **kwargs):
-        # Check if user is authenticated
-        if not request.user.is_authenticated:
-            messages.error(request, "Please log in to access the sponsor area.")
-            return redirect('login')
-        
-        # Check if user has sponsor role
-        if request.user.role != 'sponsor':
-            messages.error(request, "This area is restricted to sponsors only.")
-            return redirect('home')
-            
-        return function(request, *args, **kwargs)
-    return wrapper
+
+def role_required(role: str): # argument taker
+    def require_decorator(view): # decorator
+        @wraps(view)
+        @login_required
+        def wrapper(request, *args, **kwargs):
+            print('wrapper called')
+            if request.user.role != role:
+                messages.error(request, f'This page is restricted to {role}')
+                return redirect('home')
+
+            return view(request, *args, **kwargs)
+
+        return wrapper
+    return require_decorator
+
 
 def index(request):
     # Get all events from the database
@@ -57,6 +59,9 @@ def login_view(request):
                 if user is not None:
                     login(request, user)
                     messages.success(request, 'Login Successful')
+                    next = request.POST.get('next')
+                    if next:
+                        return redirect(next)
                     return redirect('home')
                 else:
                     form.add_error('password', error=ValidationError('Invalid Credentials'))
@@ -77,26 +82,28 @@ def logout_view(request):
     return redirect('home')
 
 
+def events_view(request):
+    events = Event.objects.all().order_by('date_time')
+    return render(request, 'nascon/events.html', {'events': events})
 
-# Add these view functions
-@sponsor_required
+
+@role_required('sponsor')
 def sponsor_view(request):
     """View for the main sponsor page showing available packages"""
     # Dummy data for packages
     packages = SponsorshipPackage.objects.all()
     
+    benefits_list = []
     for package in packages:
-        # Assuming benefits are stored as text with each benefit on a new line
         if package.benefits:
-            package.benefits_list = package.benefits.split(', ')
-        else:
-            package.benefits_list = []
+            benefits_list = package.benefits.split(', ')
 
     return render(request, 'nascon/sponsor.html', {
-        'packages': packages
+        'packages': packages,
+        'benefits': benefits_list
     })
 
-@sponsor_required
+@role_required('sponsor')
 def sponsor_events_view(request):
     """View for selecting which event to sponsor after choosing a package"""
     package_id = request.GET.get('package')
@@ -111,11 +118,7 @@ def sponsor_events_view(request):
         'events': events
     })
 
-def events_view(request):
-    events = Event.objects.all().order_by('date_time')
-    return render(request, 'nascon/events.html', {'events': events})
-
-@sponsor_required
+@role_required('sponsor')
 def sponsor_confirm_view(request):
     """Handle form submission and show confirmation"""
     if request.method == 'POST':

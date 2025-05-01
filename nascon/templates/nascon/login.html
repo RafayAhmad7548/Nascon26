@@ -50,6 +50,8 @@
                     {% endfor %}
                 </div>
                 {% endif %}
+
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
                 
                 <button type="submit" class="cta-button auth-button">Log In</button>
                 
