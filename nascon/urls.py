@@ -10,4 +10,9 @@ urlpatterns = [
     path('login/', views.login_view, name="login"),
     path('signup/', views.signup_view, name="signup"),
     path('logout/', views.logout_view, name="logout"),
+    path('events/register/<int:event_id>/', views.event_register, name='event_register'),
+    path('events/register/<int:event_id>/team/', views.team_create, name='team_create'),
+    path('events/register/<int:event_id>/confirm/', views.registration_confirm, name='registration_confirm'),
+    path('api/check-team-name/', views.check_team_name, name='check_team_name'),
+    path('api/check-member-email/', views.check_member_email, name='check_member_email'),
 ]

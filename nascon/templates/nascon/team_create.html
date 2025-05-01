@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Team - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/registration.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="registration-section">
+    <div class="container">
+        <div class="registration-container">
+            <div class="registration-header">
+                <h1>{% if is_team %}Create Your Team{% else %}Complete Registration{% endif %}</h1>
+                <p>{{ event.event_name }}</p>
+            </div>
+            
+            <form method="post" action="{% url 'team_create' event.event_id %}" class="team-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="team_name">Team Name</label>
+                    <input type="text" id="team_name" name="team_name" required>
+                    <div id="team-name-validation" class="validation-message"></div>
+                </div>
+                
+                <div class="team-members">
+                    <div class="members-header">
+                        <h3>Team Members</h3>
+                        <div class="members-counter">
+                            <span id="membersCount">1/{{ event.max_participants }}</span> Members
+                        </div>
+                    </div>
+                    
+                    <div class="team-captain">
+                        <span>{{ request.user.email }}</span>
+                        <span class="captain-label">Team Captain</span>
+                    </div>
+                    
+                    {% if is_team %}
+                    <div id="membersList">
+                        <!-- Dynamic member rows will be added here -->
+                    </div>
+                    
+                    <button type="button" id="addMemberBtn" class="add-member">
+                        <i class="fa fa-plus"></i> Add Team Member
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <div class="actions">
+                    <a href="{% url 'event_register' event.event_id %}" class="secondary-button">Back</a>
+                    <button type="submit" class="cta-button">Continue to Confirmation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Team name validation
+        const teamNameInput = document.getElementById('team_name');
+        const teamNameValidation = document.getElementById('team-name-validation');
+        
+        teamNameInput.addEventListener('blur', function() {
+            if (teamNameInput.value) {
+                // Check if team name is available
+                fetch(`/api/check-team-name/?name=${encodeURIComponent(teamNameInput.value)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            teamNameValidation.textContent = "Team name is already taken";
+                            teamNameValidation.className = "validation-message invalid";
+                        } else {
+                            teamNameValidation.textContent = "Team name is available";
+                            teamNameValidation.className = "validation-message valid";
+                        }
+                    });
+            }
+        });
+        
+        // Only initialize team member functionality if it's team registration
+        {% if is_team %}
+        // Handle adding/removing team members
+        const addMemberBtn = document.getElementById('addMemberBtn');
+        const membersList = document.getElementById('membersList');
+        const membersCount = document.getElementById('membersCount');
+        const maxMembers = {{ event.max_participants }};
+        
+        // Add member row
+        addMemberBtn.addEventListener('click', function() {
+            const currentCount = membersList.querySelectorAll('.member-row').length + 1; // +1 for captain
+            
+            if (currentCount < maxMembers) {
+                const memberRow = document.createElement('div');
+                memberRow.className = 'member-row';
+                memberRow.innerHTML = `
+                    <div class="member-email">
+                        <input type="email" name="member_email" placeholder="Team member's email address" required>
+                        <div class="validation-message"></div>
+                    </div>
+                    <button type="button" class="remove-member">×</button>
+                `;
+                membersList.appendChild(memberRow);
+                updateCounter();
+                
+                // Add validation for this new email field
+                const emailInput = memberRow.querySelector('input[type="email"]');
+                const validationMessage = memberRow.querySelector('.validation-message');
+                
+                emailInput.addEventListener('blur', function() {
+                    validateMemberEmail(emailInput, validationMessage);
+                });
+            }
+        });
+        
+        // Remove member functionality
+        membersList.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-member')) {
+                e.target.closest('.member-row').remove();
+                updateCounter();
+            }
+        });
+        
+        function updateCounter() {
+            const currentCount = membersList.querySelectorAll('.member-row').length + 1; // +1 for captain
+            membersCount.textContent = `${currentCount}/${maxMembers}`;
+            
+            // Disable add button if max reached
+            if (currentCount >= maxMembers) {
+                addMemberBtn.disabled = true;
+                addMemberBtn.style.opacity = '0.5';
+            } else {
+                addMemberBtn.disabled = false;
+                addMemberBtn.style.opacity = '1';
+            }
+        }
+        
+        function validateMemberEmail(emailInput, validationElement) {
+            const email = emailInput.value;
+            
+            if (email) {
+                fetch(`/api/check-member-email/?email=${encodeURIComponent(email)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists && data.is_participant) {
+                            validationElement.textContent = "✓ Valid participant";
+                            validationElement.className = "validation-message valid";
+                        } else if (data.exists) {
+                            validationElement.textContent = "✕ User exists but is not a participant";
+                            validationElement.className = "validation-message invalid";
+                        } else {
+                            validationElement.textContent = "✕ Email not registered";
+                            validationElement.className = "validation-message invalid";
+                        }
+                    });
+            }
+        }
+        {% endif %}
+    });
+</script>
+{% endblock %}

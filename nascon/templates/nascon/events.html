@@ -42,7 +42,7 @@
                             <p class="event-description">{{ event.description|truncatewords:20 }}</p>
                             <div class="event-footer">
                                 <div class="registration-fee">Registration: Rs.{{ event.registration_fees }}</div>
-                                <a href="#" class="-register-now-link">Register Now</a>
+                                <a href="{% url 'event_register' event.event_id %}" class="-register-now-link">Register Now</a>
                             </div>
                         </div>
                     </div>

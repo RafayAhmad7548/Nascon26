@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register for {{ event.event_name }} - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/registration.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="registration-section">
+    <div class="container">
+        <div class="registration-container">
+            <div class="registration-header">
+                <h1>Event Registration</h1>
+                <p>Complete the registration process for this event</p>
+            </div>
+            
+            <div class="event-details">
+                <h3>{{ event.event_name }}</h3>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Category:</span>
+                    <span>{{ event.get_category_display }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span>{{ event.date_time|date:"F j, Y" }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Time:</span>
+                    <span>{{ event.date_time|time:"g:i A" }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Registration Fee:</span>
+                    <span>Rs.{{ event.registration_fees }}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="detail-label">Team Size:</span>
+                    <span>Up to {{ event.max_participants }} participants</span>
+                </div>
+            </div>
+            
+            <h3>How would you like to participate?</h3>
+            
+            <div class="registration-options">
+                <a href="{% url 'team_create' event.event_id %}?type=solo"
+                   class="registration-option">
+                  <div class="option-icon">👤</div>
+                  <div class="option-title">Solo Participation</div>
+                  <p>Register as an individual participant</p>
+                </a>
+                
+                <a href="{% url 'team_create' event.event_id %}?type=team"
+                   class="registration-option">
+                  <div class="option-icon">👥</div>
+                  <div class="option-title">Team Participation</div>
+                  <p>Create a team with multiple members</p>
+                </a>
+              </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Confirm Registration - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/registration.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="registration-section">
+    <div class="container">
+        <div class="registration-container">
+            <div class="registration-header">
+                <h1>Confirm Registration</h1>
+                <p>Please review your registration details</p>
+            </div>
+            
+            <div class="confirmation-summary">
+                <div class="summary-section">
+                    <h3>Event Details</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Event:</span>
+                        <span>{{ event.event_name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date:</span>
+                        <span>{{ event.date_time|date:"F j, Y" }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Time:</span>
+                        <span>{{ event.date_time|time:"g:i A" }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Category:</span>
+                        <span>{{ event.get_category_display }}</span>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h3>Team Information</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Team Name:</span>
+                        <span>{{ registration_data.team_name }}</span>
+                    </div>
+                    
+                    <h4 style="margin-top: 15px;">Team Members</h4>
+                    <ul class="team-members-list">
+                        <li>{{ request.user.email }} <span class="captain-indicator">Captain</span></li>
+                        {% if registration_data.is_team %}
+                            {% for email in registration_data.member_emails %}
+                                {% if email %}
+                                <li>{{ email }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="summary-section">
+                    <h3>Payment Information</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Registration Fee:</span>
+                        <span>Rs.{{ event.registration_fees }}</span>
+                    </div>
+                    
+                    <div class="payment-info">
+                        <p><strong>Note:</strong> Payment must be completed within 3 days of registration. Instructions for payment will be sent to your email.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <form method="post" action="{% url 'registration_confirm' event.event_id %}">
+                {% csrf_token %}
+                
+                <div class="terms-container">
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <label for="terms">I agree to the event rules and understand that registration is not complete until payment is received. I confirm that all team members are eligible to participate.</label>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <a href="{% url 'team_create' event.event_id %}?type={% if registration_data.is_team %}team{% else %}solo{% endif %}" class="secondary-button">Back</a>
+                    <button type="submit" class="cta-button">Complete Registration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
