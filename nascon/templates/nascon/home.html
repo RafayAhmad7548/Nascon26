@@ -15,8 +15,8 @@
             <h1 class="animate-in">Welcome to NaSCon 2026</h1>
             <p class="animate-in">Pakistan's largest inter-university competition</p>
             <div class="hero-buttons animate-in">
-                <a href="#register" class="cta-button">Register Now</a>
-                <a href="#events" class="secondary-button">Explore Events</a>
+                <a href="{% url 'signup' %}" class="cta-button">Register Now</a>
+                <a href="{% url 'events' %}" class="secondary-button">Explore Events</a>
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@
                         <div class="category-badge {{ event.category|default:'general'|lower }}">
                             {{ event.category|default:"General" }}
                         </div>
-                          <img src="{% static 'nascon/images/event-placeholder.jpg' %}" alt="{{ event.event_name }}">
+                          <!-- <img src="{% static 'nascon/images/event-placeholder.jpg' %}" alt="{{ event.event_name }}"> -->
                     </div>
                         <div class="event-details">
                             <h3>{{ event.event_name }}</h3>
@@ -162,14 +162,6 @@
 </section> {% endcomment %}
 </section> 
 
-<!-- Registration CTA -->
-<section id="register" class="register-section">
-    <div class="container">
-        <h2>Ready to Join NaSCon 2026?</h2>
-        <p>Registration is now open for individual and team events</p>
-        <a href="#" class="cta-button large">Register Now</a>
-    </div>
-</section>
 {% endblock %}
 
 {% block extra_js %}

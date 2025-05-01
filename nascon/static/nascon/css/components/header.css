@@ -11,6 +11,9 @@
 }
 
 .site-header .container {
+  max-width: none;
+  /* border: 1px solid red; */
+  padding: 0px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -51,6 +54,15 @@
 .nav-links a:hover {
   color: #ff5722;
 }
+
+.auth-links {
+  /* border: 1px solid red; */
+  display: flex;
+  list-style: none;
+  align-items: center;
+  gap: 10px;
+}
+
 
 .menu-toggle {
   display: none;

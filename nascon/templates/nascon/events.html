@@ -3,10 +3,15 @@
 
 {% block title %}NaSCon 2026 - Pakistan's Largest Inter-University Event{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/events.css' %}">
+{% endblock %}
+
 {% block content %}
 <!-- Events Section -->
 <section id="events" class="events-section">
     <div class="container">
+        <div style="height: 50px;"></div>
         <h2>Our Events</h2>
         <p class="section-description">Discover the exciting lineup of competitions and activities at NaSCon 2026</p>
         
@@ -49,8 +54,4 @@
     </div>
 </section>
 
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'nascon/js/home.js' %}"></script>
 {% endblock %}
