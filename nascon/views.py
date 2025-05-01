@@ -78,8 +78,12 @@ def logout_view(request):
 
 
 def events_view(request):
-    events = Event.objects.all().order_by('date_time')
-    return render(request, 'nascon/events.html', {'events': events})
+    filter = request.GET.get('filter')
+    if filter is None:
+        events = Event.objects.all().order_by('date_time')
+    else:
+        events = Event.objects.filter(category__exact=filter)
+    return render(request, 'nascon/events.html', { 'events': events })
 
 
 @role_required('sponsor')

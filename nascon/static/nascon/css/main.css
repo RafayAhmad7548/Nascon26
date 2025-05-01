@@ -338,10 +338,13 @@ to {
 .events-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-items: start;
   gap: 2rem;
+  min-height: 800px;
 }
 
 .event-card {
+  min-height: 450px;
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
@@ -394,10 +397,11 @@ to {
 
 .event-footer {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
 }
 
 .registration-fee {

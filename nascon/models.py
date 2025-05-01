@@ -32,19 +32,13 @@ class Event(models.Model):
         ('gaming', 'Gaming'),
         ('general', 'General'),
     ]
-    
-    category = models.CharField(
-        max_length=20,
-        choices=CATEGORY_CHOICES,
-        default='general'
-    )
 
     event_id = models.AutoField(primary_key=True)
     organizer_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizers')
     judge_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='judges')
     event_name = models.CharField(max_length=255)
     description = models.TextField()
-    category = models.CharField(max_length=255)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
     max_participants = models.IntegerField()
     registration_fees = models.DecimalField(max_digits=10, decimal_places=2)
     registration_last_date = models.DateField()
