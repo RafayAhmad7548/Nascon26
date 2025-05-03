@@ -418,3 +418,17 @@ to {
 from {opacity: 1;}
 to {opacity: 0; visibility: hidden;}
 }
+
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.non-field-errors {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left: 3px solid #e74c3c;
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 4px 4px 0;
+}

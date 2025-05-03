@@ -105,8 +105,11 @@ class Sponsor(models.Model):
 
 class Team(models.Model):
     team_id = models.AutoField(primary_key=True)
-    team_name = models.CharField(unique=True, max_length=255)
+    team_name = models.CharField(max_length=255)
     max_size = models.IntegerField()
     score = models.IntegerField(blank=True, null=True)
+    event = models.ForeignKey(Event, on_delete=models.DO_NOTHING)
     paymentid = models.ForeignKey(Payment, on_delete=models.DO_NOTHING)
 
+    class Meta:
+        unique_together = (('team_name', 'event'))

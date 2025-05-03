@@ -1,5 +1,7 @@
 from django import forms
-from .models import User
+from django.db.models import Q
+from django.db.models.utils import make_model_tuple
+from .models import Event, ParticipantEvent, Team, User
 
 class SignupForm(forms.ModelForm):
     
@@ -48,11 +50,52 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data.get('email')
         try:
             User.objects.get(email=email)
         except User.DoesNotExist:
             raise forms.ValidationError('Email not registered', code='not registered')
 
         return email
-    
+ 
+
+class TeamForm(forms.Form):
+    team_name = forms.CharField(max_length=255, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    event = forms.IntegerField(widget=forms.HiddenInput())
+    team_lead =  forms.EmailField(max_length=255, disabled=True, widget=forms.EmailInput(attrs={'class': 'form-control',}))
+
+    def __init__(self, num_members: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.num_members = num_members
+        
+        for i in range(1, self.num_members):
+            self.fields[f'member_{i}'] = forms.EmailField(max_length=255, required=False, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+
+    def clean(self):
+        super().clean()
+        
+        team_name = self.cleaned_data.get('team_name')
+        event = self.cleaned_data.get('event')
+        try:
+            Team.objects.get(team_name=team_name, event=event)
+            self.add_error('team_name', forms.ValidationError('Team name not available', code='not available'))
+        except Team.DoesNotExist:
+            members = []
+            # remove empty fields
+            for i in range(1, self.num_members):
+                member = self.cleaned_data.get(f'member_{i}')
+                if member == '':
+                    self.cleaned_data.pop(f'member_{i}')
+                else:
+                    try:
+                        user = User.objects.get(email=member, role='participant')
+                        ParticipantEvent.objects.get(pk=(user.id, event)) # type: ignore
+                        members.append(member)
+                    except User.DoesNotExist:
+                        self.add_error(f'member_{i}', error=forms.ValidationError('Participant does not exist'))
+                    except ParticipantEvent.DoesNotExist:
+                        self.add_error(f'member_{i}', error=forms.ValidationError('Participant already registered for this event'))
+
+            if len(members) != len(set(members)):
+                raise forms.ValidationError('Team members must be unique', code='must be unique')
+        
