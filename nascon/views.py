@@ -149,97 +149,114 @@ def event_register(request, event_id):
     """First page: Choose solo or team participation"""
 
     try:
-        event = Event.objects.get(event_id=event_id)
-    except Event.DoesNotExist:
-        messages.error(request, "Event not found.")
+        ParticipantEvent.objects.get(pk=(request.user.id, event_id))
+        messages.error(request, 'You are already registered for this event')
         return redirect('events')
+    except ParticipantEvent.DoesNotExist:
+        try:
+            event = Event.objects.get(event_id=event_id)
+        except Event.DoesNotExist:
+            messages.error(request, "Event not found.")
+            return redirect('events')
+        
+        from datetime import date
+        if event.registration_last_date < date.today():
+            messages.error(request, "Registration deadline has passed.")
+            return redirect('events')
     
-    from datetime import date
-    if event.registration_last_date < date.today():
-        messages.error(request, "Registration deadline has passed.")
-        return redirect('events')
-    
-    return render(request, 'nascon/event_register.html', { 'event': event })
+        return render(request, 'nascon/event_register.html', { 'event': event })
 
 @role_required('participant')
 def team_create(request, event_id):
     """Second page: Create team or register solo"""
+
     try:
-        event = Event.objects.get(event_id=event_id)
-    except Event.DoesNotExist:
-        messages.error(request, "Event not found.")
+        ParticipantEvent.objects.get(pk=(request.user.id, event_id))
+        messages.error(request, 'You are already registered for this event')
         return redirect('events')
-    
-    registration_type = request.GET.get('type', 'solo')
-    num_members = 1 if registration_type == 'solo' else event.max_participants
-    
-    if request.method == 'POST':
+    except ParticipantEvent.DoesNotExist:
+        try:
+            event = Event.objects.get(event_id=event_id)
+        except Event.DoesNotExist:
+            messages.error(request, "Event not found.")
+            return redirect('events')
+        
+        registration_type = request.GET.get('type', 'solo')
+        num_members = 1 if registration_type == 'solo' else event.max_participants
+        
+        if request.method == 'POST':
 
-        form = TeamForm(num_members, request.POST, initial={ 'event': event_id, 'team_lead': request.user.email })
-        if form.is_valid():
+            form = TeamForm(num_members, request.POST, initial={ 'event': event_id, 'team_lead': request.user.email })
+            if form.is_valid():
 
-            request.session['team_form_data'] = form.cleaned_data
-            return redirect('registration_confirm', event_id=event_id)
-            
-    else:
-        form = TeamForm(num_members, initial={ 'event': event_id, 'team_lead': request.user.email })
+                request.session['team_form_data'] = form.cleaned_data
+                return redirect('registration_confirm', event_id=event_id)
+                
+        else:
+            form = TeamForm(num_members, initial={ 'event': event_id, 'team_lead': request.user.email })
 
-    query_params = request.GET.urlencode()
-    return render(request, 'nascon/team_create.html', { 'form': form, 'event': event, 'query_params': query_params })
+        query_params = request.GET.urlencode()
+        return render(request, 'nascon/team_create.html', { 'form': form, 'event': event, 'query_params': query_params })
 
 @role_required('participant')
 def registration_confirm(request, event_id):
     """Third page: Confirm and complete registration"""
+
     try:
-        event = Event.objects.get(event_id=event_id)
-    except Event.DoesNotExist:
-        messages.error(request, "Event not found.")
+        ParticipantEvent.objects.get(pk=(request.user.id, event_id))
+        messages.error(request, 'You are already registered for this event')
         return redirect('events')
+    except ParticipantEvent.DoesNotExist:
+        try:
+            event = Event.objects.get(event_id=event_id)
+        except Event.DoesNotExist:
+            messages.error(request, "Event not found.")
+            return redirect('events')
 
-    cleaned_data: dict[str, Any] = request.session.get('team_form_data', {})
+        cleaned_data: dict[str, Any] = request.session.get('team_form_data', {})
 
-    member_emails = []
-    for k,v in cleaned_data.items():
-        if k.startswith('member_'):
-            member_emails.append(v)
+        member_emails = []
+        for k,v in cleaned_data.items():
+            if k.startswith('member_'):
+                member_emails.append(v)
 
-    
-    if request.method == 'POST':
-        # Create payment with 3-day due date
-        from datetime import date, timedelta
-        payment = Payment.objects.create(
-            amount=event.registration_fees,
-            payment_due_date=date.today() + timedelta(days=3)
-        )
         
-        # Create team
-        team = Team.objects.create(
-            team_name=cleaned_data['team_name'],
-            max_size=event.max_participants,
-            score=0,
-            event=event,
-            paymentid=payment
-        )
-        # Create participant-event record for team captain
-        ParticipantEvent.objects.create(
-            participant_id=request.user,
-            event_id=event,
-            team=team
-        )
-
-        for email in member_emails:
-            member = User.objects.get(email=email, role='participant')
+        if request.method == 'POST':
+            # Create payment with 3-day due date
+            from datetime import date, timedelta
+            payment = Payment.objects.create(
+                amount=event.registration_fees,
+                payment_due_date=date.today() + timedelta(days=3)
+            )
+            
+            # Create team
+            team = Team.objects.create(
+                team_name=cleaned_data['team_name'],
+                max_size=event.max_participants,
+                score=0,
+                event=event,
+                paymentid=payment
+            )
+            # Create participant-event record for team captain
             ParticipantEvent.objects.create(
-                participant_id=member,
+                participant_id=request.user,
                 event_id=event,
                 team=team
             )
+
+            for email in member_emails:
+                member = User.objects.get(email=email, role='participant')
+                ParticipantEvent.objects.create(
+                    participant_id=member,
+                    event_id=event,
+                    team=team
+                )
+            
+            messages.success(request, f"Successfully registered for {event.event_name}!")
+            return redirect('events')
         
-        messages.success(request, f"Successfully registered for {event.event_name}!")
-        return redirect('events')
-    
-    return render(request, 'nascon/registration_confirm.html', {
-        'event': event,
-        'team_name': cleaned_data['team_name'],
-        'member_emails': member_emails
-    })
+        return render(request, 'nascon/registration_confirm.html', {
+            'event': event,
+            'team_name': cleaned_data['team_name'],
+            'member_emails': member_emails
+        })

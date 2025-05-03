@@ -90,11 +90,11 @@ class TeamForm(forms.Form):
                     try:
                         user = User.objects.get(email=member, role='participant')
                         ParticipantEvent.objects.get(pk=(user.id, event)) # type: ignore
-                        members.append(member)
+                        self.add_error(f'member_{i}', error=forms.ValidationError('Participant already registered for this event'))
                     except User.DoesNotExist:
                         self.add_error(f'member_{i}', error=forms.ValidationError('Participant does not exist'))
                     except ParticipantEvent.DoesNotExist:
-                        self.add_error(f'member_{i}', error=forms.ValidationError('Participant already registered for this event'))
+                        members.append(member)
 
             if len(members) != len(set(members)):
                 raise forms.ValidationError('Team members must be unique', code='must be unique')
