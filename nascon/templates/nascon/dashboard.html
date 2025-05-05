@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>My Dashboard</h1>
+                <p>Welcome back, {{ user.first_name }}!</p>
+            </div>
+            
+            <div class="dashboard-content">
+                {% if user.role == 'participant' %}
+                    <h2>My Events</h2>
+                    {% if events_data %}
+                        <div class="dashboard-cards">
+                            {% for event_data in events_data %}
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h3>{{ event_data.event.event_name }}</h3>
+                                        <span class="event-category">{{ event_data.event.get_category_display }}</span>
+                                    </div>
+                                    <div class="card-details">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Date:</span>
+                                            <span>{{ event_data.event.date_time|date:"F j, Y" }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Team:</span>
+                                            <span>{{ event_data.team.team_name }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="team-members-section">
+                                        <h4>Team Members</h4>
+                                        <ul class="team-members-list">
+                                            <li>{{ user.email }} (You) <span class="captain-badge">Captain</span></li>
+                                            {% for member in event_data.team_members %}
+                                                <li>{{ member.email }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <p>You haven't registered for any events yet.</p>
+                            <a href="{% url 'events' %}" class="cta-button">Browse Events</a>
+                        </div>
+                    {% endif %}
+                    
+                {% elif user.role == 'sponsor' %}
+                    <h2>My Sponsorships</h2>
+                    {% if sponsorships %}
+                        <div class="dashboard-cards">
+                            {% for sponsorship in sponsorships %}
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h3>{{ sponsorship.event.event_name }}</h3>
+                                        <span class="event-category">{{ sponsorship.event.get_category_display }}</span>
+                                    </div>
+                                    <div class="card-details">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Date:</span>
+                                            <span>{{ sponsorship.event.date_time|date:"F j, Y" }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Package:</span>
+                                            <span class="package-name">{{ sponsorship.package.category }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Amount:</span>
+                                            <span>Rs.{{ sponsorship.package.cost }}</span>
+                                        </div>
+                                        
+                                        {% if sponsorship.benefits_list %}
+                                            <div class="package-benefits">
+                                                <h4>Package Benefits</h4>
+                                                <ul>
+                                                    {% for benefit in sponsorship.benefits_list %}
+                                                        <li>{{ benefit }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <p>You haven't sponsored any events yet.</p>
+                            <a href="{% url 'sponsor' %}" class="cta-button">Become a Sponsor</a>
+                        </div>
+                    {% endif %}
+                    
+                {% elif user.role == 'judge' %}
+                    <h2>Events I'm Judging</h2>
+                    {% if judged_events %}
+                        <div class="dashboard-cards">
+                            {% for event in judged_events %}
+                                <div class="dashboard-card">
+                                    <div class="card-header">
+                                        <h3>{{ event.event_name }}</h3>
+                                        <span class="event-category">{{ event.get_category_display }}</span>
+                                    </div>
+                                    <div class="card-details">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Date:</span>
+                                            <span>{{ event.date_time|date:"F j, Y" }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Time:</span>
+                                            <span>{{ event.date_time|time:"g:i A" }}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Participants:</span>
+                                            <span>{{ event.max_participants }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <p>You are not assigned to judge any events yet.</p>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

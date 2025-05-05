@@ -260,3 +260,58 @@ def registration_confirm(request, event_id):
             'team_name': cleaned_data['team_name'],
             'member_emails': member_emails
         })
+
+@login_required
+def dashboard_view(request):
+    """Dashboard view showing different content based on user role"""
+    user = request.user
+    context = {
+        'user': user
+    }
+    
+    if user.role == 'participant':
+        # Get all events the participant is registered for
+        participant_events = ParticipantEvent.objects.filter(participant_id=user)
+        events_data = []
+        
+        for pe in participant_events:
+            # For each event, get the team details and other team members
+            team = pe.team
+            team_members = ParticipantEvent.objects.filter(
+                event_id=pe.event_id, 
+                team=team
+            ).exclude(participant_id=user)
+            
+            events_data.append({
+                'event': pe.event_id,
+                'team': team,
+                'team_members': [tm.participant_id for tm in team_members]
+            })
+            
+        context['events_data'] = events_data
+        
+    elif user.role == 'sponsor':
+        # Get all events sponsored by this user
+        sponsored_events = Sponsor.objects.filter(sponsor_id=user)
+        
+        sponsorships = []
+        for sponsorship in sponsored_events:
+            # Parse benefits list
+            benefits_list = []
+            if sponsorship.package.benefits:
+                benefits_list = sponsorship.package.benefits.split(', ')
+                
+            sponsorships.append({
+                'event': sponsorship.event_id,
+                'package': sponsorship.package,
+                'benefits_list': benefits_list
+            })
+            
+        context['sponsorships'] = sponsorships
+        
+    elif user.role == 'judge':
+        # Get all events this user is judging
+        judged_events = Event.objects.filter(judge_id=user)
+        context['judged_events'] = judged_events
+    
+    return render(request, 'nascon/dashboard.html', context)

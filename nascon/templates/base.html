@@ -36,7 +36,7 @@
                 </nav>
                 <ul class="auth-links">
                     {% if request.user.is_authenticated %}
-                        <li><a href="" class="secondary-button"><i class="fa-solid fa-user"></i>  {{ request.user.username }}</a></li>
+                        <li><a href="{% url 'dashboard' %}" class="secondary-button"><i class="fa-solid fa-user"></i>  {{ request.user.username }}</a></li>
                         <li><a href="{% url 'logout' %}" class="cta-button"><i class="fa-solid fa-right-from-bracket"></i></a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}" class="secondary-button">Login</a></li>
