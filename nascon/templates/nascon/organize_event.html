@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}NaSCon 2026 - Pakistan's Largest Inter-University Event{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/organize_event.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mainbox">
+    <div class="form-container">
+        <h2 id="heading">Organize a new Event</h2>
+        <form action="{% url 'organize_event' %}" method="post" class="event-form" novalidate>
+            {% csrf_token %}
+            <div class="grid">
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="error-message">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="non-field-errors">
+                {% for error in form.non_field_errors %}
+                <p class="error-message">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit" class="cta-button submit-btn">Organize Event</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+

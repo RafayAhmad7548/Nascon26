@@ -50,7 +50,12 @@
             {% else %}
                 <p class="no-events-message">No events available at the moment. Check back soon!</p>
             {% endif %}
-        </div>    
+        </div>
+        {% if request.user.role == 'organizer' %}
+        <div class="organize-box">
+            <a href="{% url 'organize_event' %}" class="secondary-button">Organize an Event</a>
+        </div>
+        {% endif %}
     </div>
 </section>
 

@@ -307,7 +307,7 @@ def dashboard_view(request):
                 'event': sponsorship.event_id,
                 'package': sponsorship.package,
                 'benefits_list': benefits_list,
-                'event_rounds': event_rounds
+                # 'event_rounds': event_rounds
             })
             
         context['sponsorships'] = sponsorships
@@ -399,9 +399,14 @@ def orgainze_event(request):
         form = EventForm(request.POST)
         
         if form.is_valid():
-            print('validaion success')
-
-
+            
+            event = form.save(commit=False)
+            event.organizer_id = request.user
+            event.judge_id = form.cleaned_data.get('judge')
+            event.save()
+            
+            messages.success(request, 'Event Created')
+            return redirect('events')
 
     else:
         form = EventForm()

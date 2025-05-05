@@ -1,6 +1,6 @@
+from datetime import date, datetime, timedelta
 from django import forms
-from django.db.models import Q
-from django.db.models.utils import make_model_tuple
+from django.forms.widgets import EmailInput
 from .models import Event, ParticipantEvent, Team, User
 
 class SignupForm(forms.ModelForm):
@@ -98,4 +98,77 @@ class TeamForm(forms.Form):
 
             if len(members) != len(set(members)):
                 raise forms.ValidationError('Team members must be unique', code='must be unique')
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['event_name', 'description', 'category', 'max_participants', 'registration_fees', 'registration_last_date', 'date_time']
+        widgets = {
+            'event_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control', 'required': 'false'}),
+            'max_participants': forms.NumberInput(attrs={'class': 'form-control'}),
+            'registration_fees': forms.NumberInput(attrs={'class': 'form-control'}),
+            'registration_last_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'date_time': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'})
+        }
+
+    judge = forms.EmailField(widget=EmailInput(attrs={'class': 'form-control'}))
+
+
+    def clean_max_participants(self):
+        max_participants = self.cleaned_data.get('max_participants')
+        if max_participants:
+            if max_participants < 1 or max_participants > 12:
+                raise forms.ValidationError('max participants should be between 1 and 12', code='out of range')
         
+        return max_participants
+
+    def clean_registration_fees(self):
+        registration_fees = self.cleaned_data.get('registration_fees')
+        if registration_fees:
+            if registration_fees % 10 != 0:
+                raise forms.ValidationError('fees must be divisible by 10')
+            if registration_fees < 500:
+                raise forms.ValidationError('minium fees is 500')
+            if registration_fees > 5000:
+                raise forms.ValidationError('maximum fees is 5000')
+
+        return registration_fees
+
+    def clean_registration_last_date(self):
+        registration_last_date = self.cleaned_data.get('registration_last_date')
+        if registration_last_date:
+            if registration_last_date < timedelta(days=3) + date.today():
+                raise forms.ValidationError('last date for registration must be at least 3 days from now')
+
+        return registration_last_date
+    
+    def clean_judge(self):
+        judge = self.cleaned_data.get('judge')
+
+        try:
+            judge = User.objects.get(email=judge, role='judge')
+        except User.DoesNotExist:
+            raise forms.ValidationError('no judge with this email exists')
+
+        return judge
+    
+    def clean(self):
+        super().clean()
+
+        registration_last_date = self.cleaned_data.get('registration_last_date')
+        date_time = self.cleaned_data.get('date_time')
+        
+        if registration_last_date and date_time:
+            tz = date_time.tzinfo
+            if date_time < datetime.combine(registration_last_date + timedelta(days=3), datetime.min.time(), tzinfo=tz):
+                self.add_error('date_time', forms.ValidationError('Event date should be at least 3 days from last registration date'))
+        
+    
+    
+    
+
+
+
