@@ -19,6 +19,17 @@
   align-items: center;
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.logo img {
+  width: 100px;
+}
+
 .logo a {
   display: flex;
   align-items: center;
