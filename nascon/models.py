@@ -36,7 +36,7 @@ class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     organizer_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizers')
     judge_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='judges')
-    event_name = models.CharField(max_length=255)
+    event_name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
     max_participants = models.IntegerField()
@@ -61,8 +61,10 @@ class EventRound(models.Model):
     venue_id = models.ForeignKey(Venue, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('round_id', 'event_id'))
-        unique_together = (('start_time', 'venue_id'))
+        unique_together = [
+            ['round_id', 'event_id'],
+            ['start_time', 'venue_id']
+        ]
 
 
 class ParticipantEvent(models.Model):
