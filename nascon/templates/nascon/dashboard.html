@@ -190,6 +190,77 @@
                             <p>You are not assigned to judge any events yet.</p>
                         </div>
                     {% endif %}
+                {% elif user.role == 'organizer' %}
+                        <h2>Events I'm Organizing</h2>
+                        {% if organized_events_data %}
+                            <div class="dashboard-cards">
+                                {% for event_data in organized_events_data %}
+                                    <div class="dashboard-card">
+                                        <div class="card-header">
+                                            <h3>{{ event_data.event.event_name }}</h3>
+                                            <span class="event-category">{{ event_data.event.get_category_display }}</span>
+                                        </div>
+                                        <div class="card-details">
+                                            <div class="detail-row">
+                                                <span class="detail-label">Date:</span>
+                                                <span>{{ event_data.event.date_time|date:"F j, Y" }}</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Time:</span>
+                                                <span>{{ event_data.event.date_time|time:"g:i A" }}</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Teams:</span>
+                                                <span>{{ event_data.team_count }}</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Participants:</span>
+                                                <span>{{ event_data.participant_count }}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Event Rounds Section -->
+                                        {% if event_data.event_rounds %}
+                                            <div class="rounds-section">
+                                                <h4>Event Rounds</h4>
+                                                <div class="rounds-list">
+                                                    {% for round in event_data.event_rounds %}
+                                                        <div class="round-item">
+                                                            <div class="round-header">
+                                                                <span class="round-number">Round {{ round.round_id }}</span>
+                                                                <span class="round-type">{{ round.round_type }}</span>
+                                                            </div>
+                                                            <div class="round-details">
+                                                                <div class="detail-row">
+                                                                    <span class="detail-label">Time:</span>
+                                                                    <span>{{ round.start_time|date:"F j, Y" }} at {{ round.start_time|time:"g:i A" }}</span>
+                                                                </div>
+                                                                <div class="detail-row">
+                                                                    <span class="detail-label">Venue:</span>
+                                                                    <span>{{ round.venue_id.venue_name }} ({{ round.venue_id.location }})</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <p class="no-rounds">No rounds scheduled yet.</p>
+                                        {% endif %}
+                                        
+                                        <div class="card-actions">
+                                            <a href="{% url 'event_participants' event_data.event.event_id %}" class="cta-button">
+                                                View Participants
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state">
+                                <p>You are not organizing any events yet.</p>
+                            </div>
+                        {% endif %}
                 {% endif %}
             </div>
         </div>

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ event.event_name }} Participants - NaSCon 2026{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'nascon/css/pages/dashboard.css' %}">
+<style>
+    .team-section {
+        margin-bottom: 30px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+    }
+    
+    .team-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .team-score {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+    }
+    
+    .back-link {
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    
+    .participants-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .participants-table th, .participants-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .participants-table th {
+        background-color: rgba(0, 82, 204, 0.05);
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <a href="{% url 'dashboard' %}" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <h1>{{ event.event_name }} Participants</h1>
+                <p>{{ event.date_time|date:"F j, Y" }} at {{ event.date_time|time:"g:i A" }}</p>
+            </div>
+            
+            <div class="dashboard-content">
+                {% if teams_data %}
+                    {% for team_data in teams_data %}
+                        <div class="team-section">
+                            <div class="team-header">
+                                <h3>{{ team_data.team.team_name }}</h3>
+                                {% comment %} <div class="team-score">
+                                    Score: {{ team_data.team.score|default:"Not scored yet" }}
+                                </div> {% endcomment %}
+                            </div>
+                            
+                            <table class="participants-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for member in team_data.members %}
+                                        <tr>
+                                            <td>
+                                                {{ member.participant_id.first_name }} {{ member.participant_id.last_name }}
+                                                {% if member.participant_id == team_data.captain %}
+                                                    <span class="captain-badge">Captain</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ member.participant_id.email }}</td>
+                                            <td>{{ member.participant_id.get_role_display }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>No teams have registered for this event yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

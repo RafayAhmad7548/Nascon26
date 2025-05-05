@@ -220,3 +220,13 @@
     color: #777;
     margin-top: 15px;
 }
+.card-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.card-actions .cta-button {
+    padding: 8px 15px;
+    font-size: 14px;
+}

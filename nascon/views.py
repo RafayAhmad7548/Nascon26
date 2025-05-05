@@ -327,5 +327,68 @@ def dashboard_view(request):
             })
         
         context['judged_events_data'] = judged_events_data
+
+    elif user.role == 'organizer':
+            # Get all events this user is organizing
+            organized_events = Event.objects.filter(organizer_id=user)
+            
+            organized_events_data = []
+            for event in organized_events:
+                # Get rounds for this event
+                event_rounds = EventRound.objects.filter(event_id=event).order_by('round_id')
+                
+                # Get participant count
+                participant_count = ParticipantEvent.objects.filter(event_id=event).count()
+                
+                # Get team count
+                team_count = Team.objects.filter(event=event).count()
+                
+                organized_events_data.append({
+                    'event': event,
+                    'event_rounds': event_rounds,
+                    'participant_count': participant_count,
+                    'team_count': team_count
+                })
+            
+            context['organized_events_data'] = organized_events_data
     
     return render(request, 'nascon/dashboard.html', context)
+
+@role_required('organizer')
+def event_participants_view(request, event_id):
+    """View for organizers to see all participants of an event"""
+    try:
+        event = Event.objects.get(event_id=event_id)
+        
+        # Check if the current user is the organizer of this event
+        if event.organizer_id != request.user:
+            messages.error(request, "You are not authorized to view participants for this event")
+            return redirect('dashboard')
+        
+        # Get all teams for this event
+        teams = Team.objects.filter(event=event)
+        
+        teams_data = []
+        for team in teams:
+            # Get all members of this team
+            team_members = ParticipantEvent.objects.filter(event_id=event, team=team)
+            
+            # Identify team captain (assuming the first registered member is captain)
+            captain = team_members.first().participant_id if team_members.exists() else None
+            
+            teams_data.append({
+                'team': team,
+                'members': team_members,
+                'captain': captain
+            })
+        
+        return render(request, 'nascon/event_participants.html', {
+            'event': event,
+            'teams_data': teams_data
+        })
+        
+    except Event.DoesNotExist:
+        messages.error(request, "Event not found")
+        return redirect('dashboard')
+    
+    
