@@ -139,12 +139,26 @@
 }
 
 .event-card {
+  display: flex;
+  flex-direction: column;
   min-height: 450px;
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-details {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-footer {
+  margin-top: auto; /* Push footer to bottom */
+  padding-top: 1rem;
 }
 
 .event-card:hover {
@@ -166,6 +180,55 @@
 
 .event-card:hover .event-image img {
   transform: scale(1.05);
+}
+
+/* After your existing event-image styles */
+
+/* Standardize image container ratio - 16:9 aspect ratio */
+.event-image {
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio (9/16 = 0.5625) */
+  overflow: hidden;
+  position: relative;
+  background-color: #f0f0f0;
+}
+
+.event-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+}
+
+/* Enhance image positioning based on dimension classes */
+.event-image img.portrait {
+  object-position: center 25%; /* Adjust position for portrait images */
+}
+
+.event-image img.landscape {
+  object-position: center; /* Default position for landscape images */
+}
+
+/* Add overlay for better text visibility if needed */
+.event-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.event-card:hover .event-image::after {
+  opacity: 1;
 }
 
 .event-details {

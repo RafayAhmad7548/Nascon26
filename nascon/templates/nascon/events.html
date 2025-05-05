@@ -31,7 +31,7 @@
                     <div class="event-card" data-category="{{ event.category|default:'general'|lower }}">
                         <div class="event-image">
                             <!-- Placeholder image - in production, this could be dynamically loaded -->
-                            <img src="{% static 'nascon/images/event-placeholder.jpg' %}" alt="{{ event.event_name }}">
+                            <img src="{% static 'nascon/images/' %}{{ event.event_name|cut:' '|cut:'/'}}.jpg" alt="{{ event.event_name }}" >
                         </div>
                         <div class="event-details">
                             <h3>{{ event.event_name }}</h3>
