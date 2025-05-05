@@ -48,6 +48,34 @@
                                         </ul>
                                     </div>
                                 </div>
+                                <!-- Add this after other event details -->
+                                {% if event_rounds %}
+                                    <div class="rounds-section">
+                                        <h4>Event Rounds</h4>
+                                        <div class="rounds-list">
+                                            {% for round in event_rounds %}
+                                                <div class="round-item">
+                                                    <div class="round-header">
+                                                        <span class="round-number">Round {{ round.round_id }}</span>
+                                                        <span class="round-type">{{ round.round_type }}</span>
+                                                    </div>
+                                                    <div class="round-details">
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Time:</span>
+                                                            <span>{{ round.start_time|date:"F j, Y" }} at {{ round.start_time|time:"g:i A" }}</span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Venue:</span>
+                                                            <span>{{ round.venue_id.venue_name }} ({{ round.venue_id.location }})</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <p class="no-rounds">No rounds scheduled yet.</p>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     {% else %}
@@ -104,29 +132,57 @@
                     
                 {% elif user.role == 'judge' %}
                     <h2>Events I'm Judging</h2>
-                    {% if judged_events %}
+                    {% if judged_events_data %}
                         <div class="dashboard-cards">
-                            {% for event in judged_events %}
+                            {% for event in judged_events_data %}
                                 <div class="dashboard-card">
                                     <div class="card-header">
-                                        <h3>{{ event.event_name }}</h3>
-                                        <span class="event-category">{{ event.get_category_display }}</span>
+                                        <h3>{{ event.event.event_name }}</h3>
+                                        <span class="event-category">{{ event.event.get_category_display }}</span>
                                     </div>
                                     <div class="card-details">
                                         <div class="detail-row">
                                             <span class="detail-label">Date:</span>
-                                            <span>{{ event.date_time|date:"F j, Y" }}</span>
+                                            <span>{{ event.event.date_time|date:"F j, Y" }}</span>
                                         </div>
                                         <div class="detail-row">
                                             <span class="detail-label">Time:</span>
-                                            <span>{{ event.date_time|time:"g:i A" }}</span>
+                                            <span>{{ event.event.date_time|time:"g:i A" }}</span>
                                         </div>
                                         <div class="detail-row">
                                             <span class="detail-label">Participants:</span>
-                                            <span>{{ event.max_participants }}</span>
+                                            <span>{{ event.event.max_participants }}</span>
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Add this after other event details -->
+                                {% if event.event_rounds %}
+                                    <div class="rounds-section">
+                                        <h4>Event Rounds</h4>
+                                        <div class="rounds-list">
+                                            {% for round in event.event_rounds %}
+                                                <div class="round-item">
+                                                    <div class="round-header">
+                                                        <span class="round-number">Round {{ round.round_id }}</span>
+                                                        <span class="round-type">{{ round.round_type }}</span>
+                                                    </div>
+                                                    <div class="round-details">
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Time:</span>
+                                                            <span>{{ round.start_time|date:"F j, Y" }} at {{ round.start_time|time:"g:i A" }}</span>
+                                                        </div>
+                                                        <div class="detail-row">
+                                                            <span class="detail-label">Venue:</span>
+                                                            <span>{{ round.venue_id.venue_name }} ({{ round.venue_id.location }})</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <p class="no-rounds">No rounds scheduled yet.</p>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     {% else %}

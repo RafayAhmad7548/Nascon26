@@ -6,7 +6,7 @@ from .models import Event, SponsorshipPackage
 from .forms import SignupForm, TeamForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from .models import Event, User, Sponsor, ParticipantEvent, Payment, Team
+from .models import Event, User, Sponsor, ParticipantEvent, Payment, Team, EventRound
 from django.contrib.auth.decorators import login_required
 from .forms import SignupForm, LoginForm, TeamForm
 from functools import wraps
@@ -270,10 +270,9 @@ def dashboard_view(request):
     }
     
     if user.role == 'participant':
-        # Get all events the participant is registered for
+        # Get all events the participant is registered
         participant_events = ParticipantEvent.objects.filter(participant_id=user)
         events_data = []
-        
         for pe in participant_events:
             # For each event, get the team details and other team members
             team = pe.team
@@ -281,11 +280,15 @@ def dashboard_view(request):
                 event_id=pe.event_id, 
                 team=team
             ).exclude(participant_id=user)
+
+            # Get event rounds for this event
+            event_rounds = EventRound.objects.filter(event_id=pe.event_id).order_by('round_id')
             
             events_data.append({
                 'event': pe.event_id,
                 'team': team,
-                'team_members': [tm.participant_id for tm in team_members]
+                'team_members': [tm.participant_id for tm in team_members],
+                'event_rounds': event_rounds
             })
             
         context['events_data'] = events_data
@@ -300,11 +303,11 @@ def dashboard_view(request):
             benefits_list = []
             if sponsorship.package.benefits:
                 benefits_list = sponsorship.package.benefits.split(', ')
-                
             sponsorships.append({
                 'event': sponsorship.event_id,
                 'package': sponsorship.package,
-                'benefits_list': benefits_list
+                'benefits_list': benefits_list,
+                'event_rounds': event_rounds
             })
             
         context['sponsorships'] = sponsorships
@@ -312,6 +315,17 @@ def dashboard_view(request):
     elif user.role == 'judge':
         # Get all events this user is judging
         judged_events = Event.objects.filter(judge_id=user)
-        context['judged_events'] = judged_events
+        
+        # For judge, include detailed event rounds information
+        judged_events_data = []
+        for event in judged_events:
+            event_rounds = EventRound.objects.filter(event_id=event)
+            print(event_rounds)
+            judged_events_data.append({
+                'event': event,
+                'event_rounds': event_rounds
+            })
+        
+        context['judged_events_data'] = judged_events_data
     
     return render(request, 'nascon/dashboard.html', context)

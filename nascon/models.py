@@ -62,6 +62,7 @@ class EventRound(models.Model):
 
     class Meta:
         unique_together = (('round_id', 'event_id'))
+        unique_together = (('start_time', 'venue_id'))
 
 
 class ParticipantEvent(models.Model):

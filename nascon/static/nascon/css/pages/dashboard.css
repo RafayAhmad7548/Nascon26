@@ -79,6 +79,7 @@
 
 .detail-row {
     display: flex;
+    gap: 40px;
     margin-bottom: 8px;
 }
 
@@ -165,4 +166,57 @@
         width: 100%;
         margin-bottom: 5px;
     }
+}
+/* Event Rounds styling */
+.rounds-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.rounds-section h4 {
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.rounds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.round-item {
+    background-color: rgba(0, 82, 204, 0.05);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.round-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.round-number {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.round-type {
+    background-color: #e0e0e0;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.round-details .detail-row {
+    margin-bottom: 5px;
+}
+
+.no-rounds {
+    font-style: italic;
+    color: #777;
+    margin-top: 15px;
 }
