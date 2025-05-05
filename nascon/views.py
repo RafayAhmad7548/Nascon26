@@ -3,7 +3,7 @@ from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Event, SponsorshipPackage
-from .forms import SignupForm, TeamForm
+from .forms import EventForm, SignupForm, TeamForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from .models import Event, User, Sponsor, ParticipantEvent, Payment, Team, EventRound
@@ -392,3 +392,18 @@ def event_participants_view(request, event_id):
         return redirect('dashboard')
     
     
+
+@role_required('organizer')
+def orgainze_event(request):
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        
+        if form.is_valid():
+            print('validaion success')
+
+
+
+    else:
+        form = EventForm()
+
+    return render(request, 'nascon/organize_event.html', { 'form': form })
